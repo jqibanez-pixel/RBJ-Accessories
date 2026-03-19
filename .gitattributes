@@ -5,7 +5,6 @@
 *.webp binary
 *.gif binary
 *.ico binary
-*.glb binary
+*.glb filter=lfs diff=lfs merge=lfs -text
 *.heic binary
 *.pdf binary
-*.glb filter=lfs diff=lfs merge=lfs -text
