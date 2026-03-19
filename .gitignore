@@ -1,0 +1,8 @@
+node_modules/
+*.tsbuildinfo
+ADMIN/assets/*.js.map
+.env
+.env.*
+!.env.example
+vendor/
+*.log

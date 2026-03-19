@@ -1,0 +1,35 @@
+-- Insert RBJ Motorcycle Seat Cover Products
+-- These products match the Shopee catalog shown in the images
+
+INSERT INTO customization_templates (name, description, category, base_price, is_active, created_at) VALUES
+
+('STELLAR SEAT COVER | UNIVERSAL SEAT COVER', 'Stellar design motorcycle seat cover perfect for universal fit motorcycles', 'seat_covers', 950, 1, NOW()),
+('FULL SMOKE INDO SEAT COVER | UNIVERSAL SEAT', 'Full smoke design Indo seat cover for universal motorcycle seats', 'seat_covers', 880, 1, NOW()),
+('PLAIN INDO COVER WITH SPLIT CHECKERED', 'Plain Indo cover with split checkered pattern design', 'seat_covers', 480, 1, NOW()),
+('CLEAR COVER FOR MOTOR SEAT | UNIVERSAL SEAT', 'Clear protective cover for motor seat with universal fit', 'seat_covers', 250, 1, NOW()),
+('FULL SMOKE FLAME WITH LINING | INDO SEAT COVER', 'Full smoke flame design with lining for Indo seat', 'seat_covers', 980, 1, NOW()),
+('BRIDE DARK EDITION SEAT COVER | UNIVERSAL', 'Bride dark edition seat cover for universal motorcycles', 'seat_covers', 650, 1, NOW()),
+('INFINITY KNOT WITH FLAME INDO CONCEPT', 'Infinity knot design with flame pattern Indo concept', 'seat_covers', 900, 1, NOW()),
+('INFINITY KNOT X FLAME INDO UNIVERSAL SEAT', 'Infinity knot X flame design for Indo universal seats', 'seat_covers', 850, 1, NOW()),
+('RACING SEAT SMOKE CARBON', 'Racing seat with smoke carbon finish', 'seat_covers', 3500, 1, NOW()),
+('INDO SEAT COVER WITH BANDANA EXTENSION', 'Indo seat cover with bandana extension design', 'seat_covers', 650, 1, NOW()),
+('HALF SMOKE HALF F1 CARBON UNIVERSAL IND', 'Half smoke half F1 carbon design for universal Indo', 'seat_covers', 850, 1, NOW()),
+('DARUMA VERSION 3 UNIVERSAL SEAT COVER', 'Daruma version 3 design for universal motorcycle seats', 'seat_covers', 850, 1, NOW()),
+('RACING SEAT INFINITY KNOT WITH FLAME AND', 'Racing seat with infinity knot and flame pattern', 'seat_covers', 850, 1, NOW()),
+('INDO CONCEPT SEATS | NEW DESIGN', 'Indo concept seats with new modern design', 'seat_covers', 3300, 1, NOW()),
+('BRAND NEW INDO SEAT ASSEMBLY', 'Brand new Indo seat assembly complete package', 'seat_covers', 3350, 1, NOW()),
+('INFINITY KNOT WITH SIDE FLAME EXTENSION IND', 'Infinity knot design with side flame extension Indo', 'seat_covers', 785, 1, NOW()),
+('DARUMA DOLL SEAT COVER | RBJ ACCESSORIES', 'Daruma doll design seat cover RBJ accessories', 'seat_covers', 950, 1, NOW()),
+('NEW INFINITY KNOT | INDO CONCEPT SEAT COVER', 'New infinity knot design Indo concept seat cover', 'seat_covers', 650, 1, NOW()),
+('INDO SEAT COVER PLAIN SAND | INDO CONCEPT', 'Indo seat cover plain sand color Indo concept', 'seat_covers', 420, 1, NOW()),
+('INDO SEAT COVER ORIGINAL 3D', 'Indo seat cover original 3D design', 'seat_covers', 550, 1, NOW()),
+('INFINITY KNOT WITH PAISLEY EXTENSION', 'Infinity knot design with paisley extension', 'seat_covers', 650, 1, NOW()),
+('DARUMA UNIVERSAL SEAT COVER', 'Daruma design universal motorcycle seat cover', 'seat_covers', 400, 1, NOW()),
+('NEW MOTOR SEAT COVER | UNIVERSAL SEAT COVER', 'New motor seat cover with universal fit', 'seat_covers', 880, 1, NOW()),
+('DARUMA VERSION 2 UNIVERSAL SEAT COVER', 'Daruma version 2 design universal seat cover', 'seat_covers', 950, 1, NOW()),
+('INDO CONCEPT UNIVERSAL SEAT COVER', 'Indo concept design for universal motorcycle seats', 'seat_covers', 250, 1, NOW()),
+('YAYAMANIN UNIVERSAL SEAT COVER | RBJ', 'Yayamanin design universal seat cover by RBJ', 'seat_covers', 550, 1, NOW()),
+('INFINITY KNOT 3D F1 LIHA TEXTURE | INDO SEAT', 'Infinity knot 3D F1 Liha texture Indo seat cover', 'seat_covers', 550, 1, NOW()),
+('BRAND NEW INDO SEAT | ICPH', 'Brand new Indo seat ICPH model', 'seat_covers', 3350, 1, NOW()),
+('SKULL PAISLEY SEAT COVER | UNIVERSAL SEAT', 'Skull paisley design universal motorcycle seat cover', 'seat_covers', 750, 1, NOW()),
+('BRIDE UNIVERSAL SEAT COVER', 'Bride design universal motorcycle seat cover', 'seat_covers', 850, 1, NOW());
