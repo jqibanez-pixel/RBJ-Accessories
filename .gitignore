@@ -6,3 +6,6 @@ ADMIN/assets/*.js.map
 !.env.example
 vendor/
 *.log
+cookies.txt
+.DS_Store
+Thumbs.db
