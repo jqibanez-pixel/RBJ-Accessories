@@ -103,6 +103,68 @@ if (!function_exists('rbj_is_https')) {
     }
 }
 
+if (!function_exists('rbj_app_base_path')) {
+    function rbj_app_base_path(): string
+    {
+        static $basePath = null;
+        if ($basePath !== null) {
+            return $basePath;
+        }
+
+        $envBase = trim((string)rbj_env('RBJ_APP_BASE_PATH', ''));
+        if ($envBase !== '') {
+            $envBase = '/' . trim($envBase, '/');
+            $basePath = $envBase === '/' ? '' : $envBase;
+            return $basePath;
+        }
+
+        $scriptName = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? ''));
+        $dir = str_replace('\\', '/', dirname($scriptName));
+        if ($dir === '.' || $dir === '/' || $dir === '\\') {
+            $basePath = '';
+            return $basePath;
+        }
+
+        $dir = rtrim($dir, '/');
+        $dir = preg_replace('#/(USER|ADMIN)$#i', '', $dir) ?? $dir;
+        $dir = trim($dir);
+        if ($dir === '' || $dir === '.') {
+            $basePath = '';
+            return $basePath;
+        }
+
+        $basePath = '/' . ltrim($dir, '/');
+        return $basePath;
+    }
+}
+
+if (!function_exists('rbj_app_url')) {
+    function rbj_app_url(string $path = ''): string
+    {
+        $basePath = rbj_app_base_path();
+        $path = ltrim(str_replace('\\', '/', $path), '/');
+        if ($path === '') {
+            return $basePath !== '' ? $basePath . '/' : '/';
+        }
+        return ($basePath !== '' ? $basePath : '') . '/' . $path;
+    }
+}
+
+if (!function_exists('rbj_rewrite_legacy_app_paths')) {
+    function rbj_rewrite_legacy_app_paths(string $content): string
+    {
+        $legacyPrefix = '/rbjsystem/';
+        $targetPrefix = rbj_app_url('');
+        if ($targetPrefix === '/' || $targetPrefix === '') {
+            $targetPrefix = '/';
+        }
+        if ($targetPrefix === $legacyPrefix) {
+            return $content;
+        }
+        return str_replace($legacyPrefix, $targetPrefix, $content);
+    }
+}
+
 if (!function_exists('rbj_apply_security_headers')) {
     function rbj_apply_security_headers(): void
     {
@@ -152,6 +214,22 @@ if (!function_exists('rbj_harden_session_cookie')) {
 
 rbj_apply_security_headers();
 rbj_harden_session_cookie();
+
+if (PHP_SAPI !== 'cli' && !headers_sent()) {
+    $bufferList = ob_list_handlers();
+    $rewriteRegistered = false;
+    if (is_array($bufferList)) {
+        foreach ($bufferList as $handlerName) {
+            if (stripos((string)$handlerName, 'rbj_rewrite_legacy_app_paths') !== false) {
+                $rewriteRegistered = true;
+                break;
+            }
+        }
+    }
+    if (!$rewriteRegistered) {
+        ob_start('rbj_rewrite_legacy_app_paths');
+    }
+}
 
 // Database configuration (override via .env values).
 $servername = trim((string)rbj_env('RBJ_DB_HOST', 'localhost'));
