@@ -566,5 +566,121 @@ html[data-theme="light"] .order-id-chip {
   color: var(--rbj-text);
   border: 1px solid rgba(217,4,41,0.2);
 }
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+.rbj-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 14px;
+}
+
+.rbj-table-scroll table {
+  min-width: 640px;
+}
+
+@media (max-width: 900px) {
+  body::before,
+  body::after {
+    inset: -35%;
+  }
+
+  .wrapper,
+  .content,
+  .main,
+  .container,
+  .panel,
+  .card,
+  .cart-items,
+  .cart-summary,
+  .summary-card,
+  .stat-card,
+  .profile-card,
+  .address-card,
+  .support-card,
+  .notification-card,
+  .orders-container,
+  .message-card,
+  .review-card {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    min-width: 0;
+  }
+
+  .wrapper,
+  .content,
+  .main,
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .panel,
+  .card,
+  .cart-items,
+  .cart-summary,
+  .summary-card,
+  .stat-card,
+  .profile-card,
+  .address-card,
+  .support-card,
+  .notification-card,
+  .orders-container,
+  .message-card,
+  .review-card {
+    border-radius: 14px !important;
+  }
+
+  .page-title,
+  .wrapper h1,
+  .section h2,
+  h1,
+  h2 {
+    line-height: 1.2;
+  }
+
+  .rbj-table-scroll {
+    margin-inline: -2px;
+  }
+
+  .rbj-table-scroll table {
+    min-width: 560px;
+  }
+
+  input,
+  select,
+  textarea,
+  button,
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .action-btn,
+  .checkout-btn,
+  .shop-btn,
+  .request-btn {
+    max-width: 100%;
+  }
+}
 </style>
 

@@ -84,6 +84,11 @@ function enhanceSidebar(sidebar) {
     qa("nav a", sidebar).forEach((link) => {
         const label = text(link);
         link.setAttribute("data-short", label.slice(0, 3).toUpperCase());
+        link.addEventListener("click", () => {
+            if (window.matchMedia("(max-width: 980px)").matches) {
+                document.body.classList.remove("sidebar-open");
+            }
+        });
     });
     document.addEventListener("click", (event) => {
         if (!window.matchMedia("(max-width: 980px)").matches) {

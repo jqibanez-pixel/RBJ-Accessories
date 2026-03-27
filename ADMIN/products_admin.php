@@ -6,6 +6,8 @@ if (!isset($_SESSION['user_id']) || !in_array(($_SESSION['role'] ?? ''), ['admin
     header("Location: ../login.php");
     exit();
 }
+$current_admin_name = (string)($_SESSION['username'] ?? 'Admin');
+$current_admin_role = (string)($_SESSION['role'] ?? 'admin');
 
 include '../config.php';
 require_once __DIR__ . '/admin_audit.php';
@@ -577,11 +579,6 @@ $conn->close();
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
 body { background: #f4f6f8; }
 .admin-container { display: flex; height: 100vh; }
-/* Sidebar */
-.sidebar { width: 220px; background: #111; color: white; padding: 20px; }
-.sidebar h2 { margin-bottom: 30px; }
-.sidebar nav a { display: block; color: white; text-decoration: none; padding: 10px; margin-bottom: 5px; }
-.sidebar nav a:hover, .sidebar nav a.active { background: #444; border-radius: 5px; }
 /* Content */
 .content { flex: 1; padding: 30px; overflow-y: auto; }
 .content h1 { margin-bottom: 20px; }
@@ -747,10 +744,15 @@ tr:hover { background: #f8f9fa; }
 <body>
 <div class="admin-container">
   <aside class="sidebar">
-    <div class="logo" style="text-align: center; margin-bottom: 20px;">
-      <a href="/rbjsystem/ADMIN/dashboard_admin.php">
-        <img src="/rbjsystem/rbjlogo.png" alt="RBJ Logo" style="height: 100px; width: auto; display: block; margin: 0 auto;">
+    <div class="logo">
+      <a class="admin-logo-link" href="/rbjsystem/ADMIN/dashboard_admin.php">
+        <img src="/rbjsystem/rbjlogo.png" alt="RBJ Logo">
       </a>
+    </div>
+    <div class="admin-identity-card">
+      <div class="admin-identity-label">Logged In As</div>
+      <div class="admin-identity-name"><?php echo htmlspecialchars($current_admin_name, ENT_QUOTES, 'UTF-8'); ?></div>
+      <div class="admin-identity-role"><?php echo htmlspecialchars($current_admin_role, ENT_QUOTES, 'UTF-8'); ?></div>
     </div>
     <nav>
       <a href="/rbjsystem/ADMIN/dashboard_admin.php">Dashboard</a>

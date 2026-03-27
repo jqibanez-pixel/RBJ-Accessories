@@ -164,6 +164,23 @@ html[data-theme="light"] .user-footer-note {
   font-size: 11px;
   color: rgba(255,255,255,0.72);
 }
+.rbj-chat-presence {
+  min-height: 22px;
+  padding: 0 12px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rbj-chat-presence span {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.88);
+  font-size: 11px;
+}
 
 .rbj-chat-head-actions {
   display: inline-flex;
@@ -219,6 +236,24 @@ html[data-theme="light"] .user-footer-note {
 .rbj-chat-msg-text {
   white-space: pre-wrap;
 }
+.rbj-chat-attachment {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+.rbj-chat-attachment a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.rbj-chat-attachment img {
+  max-width: 210px;
+  max-height: 170px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.14);
+  object-fit: cover;
+  cursor: zoom-in;
+}
 
 .rbj-chat-meta {
   margin-top: 4px;
@@ -258,9 +293,44 @@ html[data-theme="light"] .user-footer-note {
 .rbj-chat-msg.user .rbj-chat-meta {
   justify-content: flex-end;
 }
+.rbj-chat-msg.typing {
+  max-width: 92px;
+}
+.rbj-chat-msg.typing .rbj-chat-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 54px;
+}
+.rbj-typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.82);
+  animation: rbjTypingPulse 1.1s ease-in-out infinite;
+}
+.rbj-chat-msg.user.typing .rbj-typing-dot {
+  background: rgba(255,255,255,0.86);
+}
+.rbj-typing-dot:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.rbj-typing-dot:nth-child(3) {
+  animation-delay: 0.36s;
+}
+@keyframes rbjTypingPulse {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  40% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
 
 .rbj-chat-form {
-  display: flex;
+  display: grid;
   gap: 8px;
   padding: 10px;
   border-top: 1px solid rgba(255,255,255,0.1);
@@ -279,6 +349,96 @@ html[data-theme="light"] .user-footer-note {
 
 .rbj-chat-form input::placeholder {
   color: rgba(255,255,255,0.64);
+}
+
+.rbj-chat-form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.rbj-chat-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: rgba(255,255,255,0.78);
+}
+
+.rbj-chat-attach {
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.rbj-chat-attachment-card {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.rbj-chat-attachment-card.is-visible {
+  display: flex;
+}
+
+.rbj-chat-attachment-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  background: rgba(255,255,255,0.08);
+}
+
+.rbj-chat-attachment-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rbj-chat-attachment-thumb i {
+  font-size: 26px;
+}
+
+.rbj-chat-attachment-meta {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.rbj-chat-attachment-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  word-break: break-word;
+}
+
+.rbj-chat-attachment-type {
+  font-size: 11px;
+  color: rgba(255,255,255,0.72);
+}
+
+.rbj-chat-attach input {
+  display: none;
+}
+
+.rbj-chat-attach-clear {
+  border: none;
+  background: transparent;
+  color: #ff9d9d;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
 }
 
 .rbj-chat-form button {
@@ -358,10 +518,78 @@ html[data-theme="light"] .rbj-chat-form button {
   color: #fff;
 }
 
+html[data-theme="light"] .rbj-chat-attachment-card {
+  background: #fff3f0;
+  border-color: rgba(217,4,41,0.14);
+}
+
+html[data-theme="light"] .rbj-chat-attachment-thumb {
+  background: #fff;
+  border-color: rgba(217,4,41,0.18);
+}
+
+html[data-theme="light"] .rbj-chat-attachment-name {
+  color: #7a211b;
+}
+
+html[data-theme="light"] .rbj-chat-attachment-type {
+  color: #9f4b43;
+}
+
 html[data-theme="light"] .rbj-chat-launcher .rbj-chat-badge {
   background: #fff;
   color: #8d2720;
   box-shadow: 0 0 0 2px rgba(217,4,41,0.3);
+}
+.rbj-chat-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 10, 10, 0.82);
+}
+.rbj-chat-lightbox.show {
+  display: flex;
+}
+.rbj-chat-lightbox-inner {
+  position: relative;
+  max-width: min(94vw, 960px);
+  max-height: 88vh;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+.rbj-chat-lightbox img {
+  max-width: 100%;
+  max-height: calc(88vh - 48px);
+  border-radius: 14px;
+  box-shadow: 0 16px 38px rgba(0,0,0,0.35);
+  background: #fff;
+}
+.rbj-chat-lightbox-caption {
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  word-break: break-word;
+}
+.rbj-chat-lightbox-close {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.24);
+  background: rgba(10,10,10,0.78);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
 }
 </style>
 
@@ -376,6 +604,28 @@ html[data-theme="light"] .rbj-chat-launcher .rbj-chat-badge {
   </div>
   <p class="user-footer-note">&copy; <?php echo date('Y'); ?> RBJ Accessories. All rights reserved.</p>
 </footer>
+<script>
+(function () {
+  function wrapResponsiveTables() {
+    var tables = document.querySelectorAll('table');
+    tables.forEach(function (table) {
+      if (table.closest('.rbj-table-scroll')) {
+        return;
+      }
+      var wrapper = document.createElement('div');
+      wrapper.className = 'rbj-table-scroll';
+      table.parentNode.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wrapResponsiveTables, { once: true });
+  } else {
+    wrapResponsiveTables();
+  }
+})();
+</script>
 <?php if ($rbj_show_live_chat): ?>
 <button id="rbjChatLauncher" class="rbj-chat-launcher" type="button" aria-label="Open live chat">
   <i class='bx bx-message-dots'></i>
@@ -397,12 +647,36 @@ html[data-theme="light"] .rbj-chat-launcher .rbj-chat-badge {
       </button>
     </div>
   </div>
+  <div id="rbjChatPresence" class="rbj-chat-presence"></div>
   <div id="rbjChatFeed" class="rbj-chat-feed"></div>
   <form id="rbjChatForm" class="rbj-chat-form">
-    <input id="rbjChatInput" type="text" placeholder="Type your message..." maxlength="350" autocomplete="off">
-    <button type="submit" aria-label="Send chat message"><i class='bx bx-send'></i></button>
+    <div class="rbj-chat-form-row">
+      <input id="rbjChatInput" type="text" placeholder="Type your message..." maxlength="1000" autocomplete="off">
+      <button type="submit" aria-label="Send chat message"><i class='bx bx-send'></i></button>
+    </div>
+    <div class="rbj-chat-tools">
+      <label class="rbj-chat-attach">Attach file
+        <input id="rbjChatAttachment" type="file" accept="image/*,.pdf,.txt">
+      </label>
+      <span id="rbjChatAttachmentPreview">Send image or file</span>
+      <button type="button" id="rbjChatAttachmentClear" class="rbj-chat-attach-clear" hidden>Clear</button>
+    </div>
+    <div id="rbjChatAttachmentCard" class="rbj-chat-attachment-card" aria-live="polite">
+      <div id="rbjChatAttachmentThumb" class="rbj-chat-attachment-thumb"><i class='bx bx-image-alt'></i></div>
+      <div class="rbj-chat-attachment-meta">
+        <div id="rbjChatAttachmentName" class="rbj-chat-attachment-name">No attachment selected</div>
+        <div id="rbjChatAttachmentType" class="rbj-chat-attachment-type">Images, PDF, or TXT up to 5MB</div>
+      </div>
+    </div>
   </form>
 </section>
+<div id="rbjChatLightbox" class="rbj-chat-lightbox" aria-hidden="true">
+  <div class="rbj-chat-lightbox-inner">
+    <button id="rbjChatLightboxClose" type="button" class="rbj-chat-lightbox-close" aria-label="Close image preview">&times;</button>
+    <img id="rbjChatLightboxImage" src="" alt="Chat attachment preview">
+    <div id="rbjChatLightboxCaption" class="rbj-chat-lightbox-caption"></div>
+  </div>
+</div>
 <?php endif; ?>
 
 <script src="assets/user-enhancements.js"></script>
@@ -425,16 +699,31 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
   var badge = document.getElementById('rbjChatBadge');
   var panel = document.getElementById('rbjChatPanel');
   var closeBtn = document.getElementById('rbjChatClose');
+  var presence = document.getElementById('rbjChatPresence');
   var feed = document.getElementById('rbjChatFeed');
   var form = document.getElementById('rbjChatForm');
   var input = document.getElementById('rbjChatInput');
-  if (!launcher || !badge || !panel || !closeBtn || !feed || !form || !input) return;
+  var attachmentInput = document.getElementById('rbjChatAttachment');
+  var attachmentPreview = document.getElementById('rbjChatAttachmentPreview');
+  var attachmentCard = document.getElementById('rbjChatAttachmentCard');
+  var attachmentThumb = document.getElementById('rbjChatAttachmentThumb');
+  var attachmentName = document.getElementById('rbjChatAttachmentName');
+  var attachmentType = document.getElementById('rbjChatAttachmentType');
+  var attachmentClear = document.getElementById('rbjChatAttachmentClear');
+  var lightbox = document.getElementById('rbjChatLightbox');
+  var lightboxImage = document.getElementById('rbjChatLightboxImage');
+  var lightboxCaption = document.getElementById('rbjChatLightboxCaption');
+  var lightboxClose = document.getElementById('rbjChatLightboxClose');
+  if (!launcher || !badge || !panel || !closeBtn || !feed || !form || !input || !presence || !attachmentInput || !attachmentPreview || !attachmentClear) return;
 
   var state = {
     open: false,
     lastId: 0,
-    unreadCount: 0
+    unreadCount: 0,
+    typingTimer: null,
+    presence: null
   };
+  var attachmentPreviewUrl = '';
 
   try {
     state.open = localStorage.getItem(openStateKey) === '1';
@@ -504,7 +793,152 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
     return 'Sent';
   }
 
+  function formatFileSize(bytes) {
+    var size = Number(bytes || 0);
+    if (!size) return '';
+    if (size >= 1024 * 1024) return (size / (1024 * 1024)).toFixed(1) + ' MB';
+    if (size >= 1024) return Math.round(size / 1024) + ' KB';
+    return size + ' B';
+  }
+
+  function isImageFile(file) {
+    return !!(file && String(file.type || '').indexOf('image/') === 0);
+  }
+
+  function openLightbox(src, caption) {
+    if (!lightbox || !lightboxImage || !src) return;
+    lightboxImage.src = src;
+    if (lightboxCaption) lightboxCaption.textContent = caption || 'Chat attachment preview';
+    lightbox.classList.add('show');
+    lightbox.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeLightbox() {
+    if (!lightbox || !lightboxImage) return;
+    lightbox.classList.remove('show');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImage.src = '';
+    if (lightboxCaption) lightboxCaption.textContent = '';
+  }
+
+  function resetAttachmentCard() {
+    if (attachmentPreviewUrl) {
+      URL.revokeObjectURL(attachmentPreviewUrl);
+      attachmentPreviewUrl = '';
+    }
+    if (!attachmentCard || !attachmentThumb || !attachmentName || !attachmentType) return;
+    attachmentCard.classList.remove('is-visible');
+    attachmentThumb.innerHTML = "<i class='bx bx-image-alt'></i>";
+    attachmentName.textContent = 'No attachment selected';
+    attachmentType.textContent = 'Images, PDF, or TXT up to 5MB';
+  }
+
+  function setAttachmentFile(file) {
+    if (!attachmentInput) return;
+    if (!file) {
+      attachmentInput.value = '';
+      updateAttachmentPreview();
+      return;
+    }
+    try {
+      var dt = new DataTransfer();
+      dt.items.add(file);
+      attachmentInput.files = dt.files;
+    } catch (e) {
+      return;
+    }
+    updateAttachmentPreview();
+  }
+
+  function updateAttachmentPreview() {
+    var file = attachmentInput.files && attachmentInput.files[0] ? attachmentInput.files[0] : null;
+    if (!file) {
+      attachmentPreview.textContent = 'Send image or file';
+      attachmentClear.hidden = true;
+      resetAttachmentCard();
+      return null;
+    }
+    attachmentPreview.textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+    attachmentClear.hidden = false;
+    if (attachmentCard && attachmentThumb && attachmentName && attachmentType) {
+      attachmentCard.classList.add('is-visible');
+      attachmentName.textContent = file.name;
+      attachmentType.textContent = (file.type ? file.type : 'File') + ' - ' + formatFileSize(file.size);
+      if (attachmentPreviewUrl) {
+        URL.revokeObjectURL(attachmentPreviewUrl);
+        attachmentPreviewUrl = '';
+      }
+      if (isImageFile(file)) {
+        attachmentPreviewUrl = URL.createObjectURL(file);
+        attachmentThumb.innerHTML = '<img src="' + attachmentPreviewUrl + '" alt="Selected image preview">';
+      } else {
+        attachmentThumb.innerHTML = "<i class='bx bx-file'></i>";
+      }
+    }
+    return file;
+  }
+
+  function renderPresence(summary) {
+    state.presence = summary || null;
+    var chips = [];
+    if (summary && summary.admin_typing) chips.push('<span>RBJ support is typing...</span>');
+    if (summary && summary.admin_viewing) chips.push('<span>RBJ support is viewing your chat</span>');
+    presence.innerHTML = chips.join('');
+    syncTypingBubble(summary || null);
+  }
+
+  function ensureTypingBubble(role) {
+    var existing = feed.querySelector('.rbj-chat-msg.typing.' + role);
+    if (existing) return existing;
+    var div = document.createElement('div');
+    div.className = 'rbj-chat-msg typing ' + role;
+    var bubble = document.createElement('div');
+    bubble.className = 'rbj-chat-bubble';
+    bubble.innerHTML = '<span class="rbj-typing-dot"></span><span class="rbj-typing-dot"></span><span class="rbj-typing-dot"></span>';
+    div.appendChild(bubble);
+    feed.appendChild(div);
+    feed.scrollTop = feed.scrollHeight;
+    return div;
+  }
+
+  function syncTypingBubble(summary) {
+    var resolved = typeof summary === 'undefined' ? state.presence : summary;
+    var adminTyping = !!(resolved && resolved.admin_typing && state.open);
+    var adminNode = feed.querySelector('.rbj-chat-msg.typing.bot');
+    if (adminTyping) {
+      ensureTypingBubble('bot');
+    } else if (adminNode) {
+      adminNode.remove();
+    }
+  }
+
+  function renderAttachment(container, attachment) {
+    if (!attachment || !attachment.url) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'rbj-chat-attachment';
+    var isImage = String(attachment.mime || '').indexOf('image/') === 0;
+    if (isImage) {
+      var link = document.createElement('a');
+      link.href = attachment.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      var img = document.createElement('img');
+      img.src = attachment.url;
+      img.alt = attachment.name || 'Attachment';
+      link.appendChild(img);
+      wrap.appendChild(link);
+    }
+    var fileLink = document.createElement('a');
+    fileLink.href = attachment.url;
+    fileLink.target = '_blank';
+    fileLink.rel = 'noopener';
+    fileLink.textContent = attachment.name || 'Open attachment';
+    wrap.appendChild(fileLink);
+    container.appendChild(wrap);
+  }
+
   function renderMessage(msg) {
+    syncTypingBubble();
     var div = document.createElement('div');
     div.className = 'rbj-chat-msg ' + (msg.role === 'user' ? 'user' : 'bot');
     div.dataset.messageId = String(Number(msg.id) || 0);
@@ -514,8 +948,11 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
 
     var text = document.createElement('div');
     text.className = 'rbj-chat-msg-text';
-    text.textContent = msg.text || '';
-    bubble.appendChild(text);
+    if (msg.text) {
+      text.textContent = msg.text || '';
+      bubble.appendChild(text);
+    }
+    renderAttachment(bubble, msg.attachment || null);
     div.appendChild(bubble);
 
     var meta = document.createElement('div');
@@ -536,6 +973,7 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
 
     div.appendChild(meta);
     feed.appendChild(div);
+    syncTypingBubble();
   }
 
   function updateMessageStatus(update) {
@@ -580,6 +1018,26 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
     } catch (e) {}
   }
 
+  async function updatePresenceState(isTyping, isViewing) {
+    try {
+      var body = new URLSearchParams();
+      body.set('action', 'update_presence');
+      body.set('is_typing', isTyping ? '1' : '0');
+      body.set('is_viewing', isViewing ? '1' : '0');
+      body.set('csrf_token', csrfToken);
+      var res = await fetch(apiUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: body.toString()
+      });
+      if (!res.ok) return;
+      var data = await res.json();
+      if (!data || !data.ok) return;
+      renderPresence(data.presence || null);
+    } catch (e) {}
+  }
+
   async function fetchChat(reset) {
     if (reset) {
       state.lastId = 0;
@@ -599,6 +1057,7 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
       });
       var updates = Array.isArray(data.status_updates) ? data.status_updates : [];
       updates.forEach(updateMessageStatus);
+      renderPresence(data.presence || null);
       if (items.length) {
         feed.scrollTop = feed.scrollHeight;
       }
@@ -612,15 +1071,16 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
 
   async function sendMessage(text) {
     try {
-      var body = new URLSearchParams();
+      var body = new FormData();
       body.set('action', 'send');
       body.set('message', text);
       body.set('csrf_token', csrfToken);
+      var attachment = attachmentInput.files && attachmentInput.files[0] ? attachmentInput.files[0] : null;
+      if (attachment) body.set('attachment', attachment);
       var res = await fetch(apiUrl, {
         method: 'POST',
         credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: body.toString()
+        body: body
       });
       if (!res.ok) return false;
       var data = await res.json();
@@ -650,6 +1110,7 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
     renderVisibility();
     await fetchChat(false);
     await markRead();
+    updatePresenceState(false, true);
     input.focus();
   });
 
@@ -659,19 +1120,75 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
       localStorage.setItem(openStateKey, '0');
     } catch (e) {}
     renderVisibility();
+    updatePresenceState(false, false);
   });
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     var text = input.value.trim();
-    if (!text) return;
+    var attachment = attachmentInput.files && attachmentInput.files[0] ? attachmentInput.files[0] : null;
+    if (!text && !attachment) return;
     var ok = await sendMessage(text);
     if (ok) {
       input.value = '';
+      attachmentInput.value = '';
+      updateAttachmentPreview();
+      updatePresenceState(false, state.open);
       await fetchChat(false);
       return;
     }
     alert('Unable to send message right now. Please try again.');
+  });
+
+  input.addEventListener('input', function () {
+    updatePresenceState(true, state.open);
+    if (state.typingTimer) clearTimeout(state.typingTimer);
+    state.typingTimer = setTimeout(function () {
+      updatePresenceState(false, state.open);
+    }, 1800);
+  });
+  input.addEventListener('paste', function (e) {
+    if (!e.clipboardData || !e.clipboardData.items) return;
+    for (var i = 0; i < e.clipboardData.items.length; i += 1) {
+      var item = e.clipboardData.items[i];
+      if (!item || String(item.type || '').indexOf('image/') !== 0) continue;
+      var blob = item.getAsFile();
+      if (!blob) continue;
+      e.preventDefault();
+      var ext = (blob.type || 'image/png').split('/')[1] || 'png';
+      var file = new File([blob], 'pasted-image-' + Date.now() + '.' + ext, { type: blob.type || 'image/png' });
+      setAttachmentFile(file);
+      break;
+    }
+  });
+
+  attachmentInput.addEventListener('change', updateAttachmentPreview);
+  attachmentClear.addEventListener('click', function () {
+    attachmentInput.value = '';
+    updateAttachmentPreview();
+  });
+  feed.addEventListener('click', function (e) {
+    var image = e.target.closest('.rbj-chat-attachment img');
+    if (!image) return;
+    e.preventDefault();
+    openLightbox(image.getAttribute('src') || '', image.getAttribute('alt') || 'Chat attachment');
+  });
+  if (lightboxClose) {
+    lightboxClose.addEventListener('click', closeLightbox);
+  }
+  if (lightbox) {
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    updatePresenceState(false, state.open && document.visibilityState === 'visible');
+  });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox && lightbox.classList.contains('show')) {
+      closeLightbox();
+    }
   });
 
   window.addEventListener('resize', applyDynamicPosition, { passive: true });
@@ -680,13 +1197,16 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
   setInterval(function () {
     fetchChat(false);
     fetchUnreadCount();
+    updatePresenceState(false, state.open && document.visibilityState === 'visible');
   }, 3000);
 
   renderVisibility();
+  updateAttachmentPreview();
   fetchChat(true);
   fetchUnreadCount();
   if (state.open) {
     markRead();
+    updatePresenceState(false, true);
   }
 })();
 </script>

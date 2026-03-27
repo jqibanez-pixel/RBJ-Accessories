@@ -290,16 +290,65 @@ $am_combined_alert_count = $am_notification_count + $am_pending_feedback_count +
 }
 
 @media (max-width: 768px) {
-  .account-menu {
-    right: 0;
-    width: min(92vw, 320px);
-    max-height: 70vh;
-    overflow-y: auto;
+  .company-dropdown,
+  .account-dropdown {
+    position: relative;
   }
 
   .company-trigger {
-    margin-left: 8px;
+    width: 100%;
+    min-height: 40px;
+    justify-content: space-between;
+    margin-left: 0;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .company-menu,
+  .account-menu {
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 4px;
+    box-shadow: none;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    animation: mobileMenuSlideDown 160ms ease;
+  }
+
+  .company-menu a,
+  .account-menu a {
+    min-height: 38px;
+    padding: 8px 10px;
+    border-radius: 8px;
     font-size: 13px;
+  }
+
+  .account-menu-summary {
+    padding: 8px 10px;
+    margin-bottom: 2px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.025);
+  }
+
+  .account-menu .menu-divider {
+    margin: 4px 6px;
+  }
+}
+
+@keyframes mobileMenuSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

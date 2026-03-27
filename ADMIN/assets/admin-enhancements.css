@@ -24,33 +24,99 @@ body {
   line-height: 1.5;
 }
 
-.sidebar .logo {
+.sidebar,
+.side {
+  width: 220px !important;
+  min-height: 100vh;
+  background: #111 !important;
+  color: #fff !important;
+  padding: 20px !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .logo,
+.side .logo {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.sidebar .logo img {
-  height: 100px;
+.admin-logo-link {
+  display: block;
+}
+
+.sidebar .logo img,
+.side .logo img {
+  height: 100px !important;
   width: auto;
   display: block;
   margin: 0 auto;
 }
 
+.admin-identity-card {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid #2b333a;
+  border-radius: 10px;
+  background: #181d22;
+  color: #f5f7fa;
+}
+
+.admin-identity-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9aa6b2;
+}
+
+.admin-identity-name {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.admin-identity-role {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #c5ced6;
+  text-transform: capitalize;
+}
+
+.sidebar nav,
+.side nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .sidebar nav a,
-.sidebar > a {
-  font-size: var(--admin-font-nav);
-  font-family: var(--admin-font-nav-family);
-  font-weight: var(--admin-font-nav-weight);
-  line-height: 1.35;
-  letter-spacing: var(--admin-font-nav-letter-spacing);
+.sidebar > a,
+.side a {
+  display: block;
+  color: #fff !important;
+  text-decoration: none;
+  padding: 10px !important;
+  margin-bottom: 0 !important;
+  border-radius: 8px;
+  font-size: var(--admin-font-nav) !important;
+  font-family: var(--admin-font-nav-family) !important;
+  font-weight: var(--admin-font-nav-weight) !important;
+  line-height: 1.35 !important;
+  letter-spacing: var(--admin-font-nav-letter-spacing) !important;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
 }
 
 .sidebar nav a.active,
-.sidebar nav a:hover {
-  letter-spacing: calc(var(--admin-font-nav-letter-spacing) + 0.01em);
+.sidebar nav a:hover,
+.sidebar > a.active,
+.sidebar > a:hover,
+.side a.a,
+.side a:hover {
+  background: #444 !important;
+  letter-spacing: calc(var(--admin-font-nav-letter-spacing) + 0.01em) !important;
 }
 
 .content,
@@ -429,5 +495,60 @@ table thead th {
 
   .content {
     padding: 18px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --admin-font-base: 14px;
+    --admin-font-nav: 14px;
+    --admin-font-table: 13px;
+    --admin-font-h1: 24px;
+  }
+
+  .sidebar,
+  .side {
+    width: min(86vw, 320px) !important;
+    padding: 16px !important;
+  }
+
+  .admin-topbar {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .admin-topbar-left,
+  .admin-topbar-right {
+    gap: 8px;
+  }
+
+  .admin-nav-toggle,
+  .admin-quick-btn,
+  .table-pagination button {
+    min-height: 40px;
+  }
+
+  .content {
+    padding: 14px !important;
+  }
+
+  .table-tools {
+    align-items: stretch;
+  }
+
+  .table-tools > div,
+  .table-pagination,
+  .table-tools input,
+  .table-tools select {
+    width: 100%;
+  }
+
+  .table-pagination {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .admin-drawer {
+    width: 100vw;
   }
 }

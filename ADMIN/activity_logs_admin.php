@@ -5,6 +5,8 @@ if (!isset($_SESSION['user_id']) || !in_array(($_SESSION['role'] ?? ''), ['admin
     header("Location: ../login.php");
     exit();
 }
+$current_admin_name = (string)($_SESSION['username'] ?? 'Admin');
+$current_admin_role = (string)($_SESSION['role'] ?? 'admin');
 
 include '../config.php';
 require_once __DIR__ . '/admin_audit.php';
@@ -139,9 +141,6 @@ function url_with_page(int $target_page): string
 * { box-sizing: border-box; font-family: Arial, sans-serif; }
 body { margin: 0; background: #f4f6f8; color: #1f2933; }
 .admin-container { display: flex; min-height: 100vh; }
-.sidebar { width: 220px; background: #111; color: #fff; padding: 20px; }
-.sidebar a { display: block; color: #fff; text-decoration: none; padding: 10px; margin-bottom: 5px; }
-.sidebar a:hover, .sidebar a.active { background: #444; border-radius: 5px; }
 .content { flex: 1; padding: 24px; overflow-x: auto; }
 .panel { background: #fff; border: 1px solid #dfe6ee; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
 .panel-head { padding: 14px 16px; border-bottom: 1px solid #edf1f5; font-weight: 700; color: #c9473c; }
@@ -166,10 +165,15 @@ th { background: #fafbfd; color: #607080; text-transform: uppercase; font-size: 
 <body>
 <div class="admin-container">
   <aside class="sidebar">
-    <div class="logo" style="text-align:center;margin-bottom:20px;">
-      <a href="/rbjsystem/ADMIN/dashboard_admin.php">
-        <img src="/rbjsystem/rbjlogo.png" alt="RBJ Logo" style="height:100px;width:auto;display:block;margin:0 auto;">
+    <div class="logo">
+      <a class="admin-logo-link" href="/rbjsystem/ADMIN/dashboard_admin.php">
+        <img src="/rbjsystem/rbjlogo.png" alt="RBJ Logo">
       </a>
+    </div>
+    <div class="admin-identity-card">
+      <div class="admin-identity-label">Logged In As</div>
+      <div class="admin-identity-name"><?php echo h($current_admin_name); ?></div>
+      <div class="admin-identity-role"><?php echo h($current_admin_role); ?></div>
     </div>
     <a href="/rbjsystem/ADMIN/dashboard_admin.php">Dashboard</a>
     <a href="/rbjsystem/ADMIN/users_admin.php">Users</a>
@@ -303,4 +307,3 @@ th { background: #fafbfd; color: #607080; text-transform: uppercase; font-size: 
 </div>
 </body>
 </html>
-

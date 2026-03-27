@@ -735,6 +735,58 @@ const SEAT_PART_DISPLAY = {
   'ULO': 'Ulo'
 };
 const STITCH_NAME_TOKENS = ['stitch', 'tahi', 'seam', 'thread', 'burda', 'tast'];
+const GLB_POINTER_SIGNATURE = 'version https://git-lfs.github.com/spec/v1';
+
+function updateDebugInfo(message) {
+  const debugInfo = document.getElementById('debug-info');
+  if (debugInfo) {
+    debugInfo.textContent = message;
+  }
+}
+
+function getFriendlyModelLoadMessage(error) {
+  const message = String((error && error.message) || error || 'Unknown model loading error.');
+  if (message.includes('Git LFS pointer')) {
+    return 'The 3D model file is still a Git LFS pointer. Download the real .glb asset first.';
+  }
+  if (message.includes('Not a valid GLB file')) {
+    return 'The loaded model response is not a real .glb file.';
+  }
+  return message;
+}
+
+async function fetchValidModelBuffer(modelPath) {
+  const response = await fetch(modelPath, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  const buffer = await response.arrayBuffer();
+  if (buffer.byteLength < 12) {
+    throw new Error(`Model file is too small (${buffer.byteLength} bytes).`);
+  }
+
+  const headerText = new TextDecoder('utf-8').decode(buffer.slice(0, Math.min(buffer.byteLength, 160)));
+  if (headerText.startsWith(GLB_POINTER_SIGNATURE)) {
+    throw new Error('Git LFS pointer detected instead of a real GLB file.');
+  }
+
+  const view = new DataView(buffer);
+  const magic = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
+  if (magic !== 'glTF') {
+    throw new Error('Not a valid GLB file.');
+  }
+
+  return buffer;
+}
+
+async function loadModelScene(modelPath) {
+  const buffer = await fetchValidModelBuffer(modelPath);
+  return await new Promise((resolve, reject) => {
+    const loader = new THREE.GLTFLoader();
+    loader.parse(buffer, '', (gltf) => resolve(gltf.scene), (error) => reject(error));
+  });
+}
 
 function getNodeByName(root, targetName) {
   const needle = String(targetName || '').trim().toLowerCase();
@@ -1041,70 +1093,44 @@ if (motorRenderer) {
 function loadMotor(modelName){
   if (!motorRenderer || !motorControls) return;
   if(motorModel) motorScene.remove(motorModel);
-  document.getElementById('debug-info').textContent = 'Loading model...';
+  updateDebugInfo('Loading model...');
 
-  fetch(MODEL_PATH)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  loadModelScene(MODEL_PATH)
+    .then((sourceScene) => {
+      sourceScene.updateMatrixWorld(true);
+      let meshCount = 0;
+      motorMeshes = {};
+      const motorMaterialNames = new Set();
+
+      const motorRootSource = getNodeByName(sourceScene, MOTOR_NODE_NAME);
+      if (!motorRootSource) {
+        throw new Error(`Node "${MOTOR_NODE_NAME}" not found in model.`);
       }
-      console.log('File is accessible, size:', response.headers.get('content-length'));
-      return response.arrayBuffer();
-    })
-    .then(buffer => {
-      console.log('File loaded as ArrayBuffer, size:', buffer.byteLength);
-      // Check GLB header
-      const view = new DataView(buffer);
-      const magic = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
-      console.log('GLB magic:', magic);
-      if (magic !== 'glTF') {
-        throw new Error('Not a valid GLB file');
-      }
-      const version = view.getUint32(4, true);
-      console.log('GLB version:', version);
 
-      // Now try to load with Three.js
-      const loader = new THREE.GLTFLoader();
-      loader.parse(buffer, '', (gltf) => {
-        const sourceScene = gltf.scene;
-        sourceScene.updateMatrixWorld(true);
-        let meshCount = 0;
-        motorMeshes = {};
-        const motorMaterialNames = new Set();
-
-        const motorRootSource = getNodeByName(sourceScene, MOTOR_NODE_NAME);
-        if (!motorRootSource) {
-          throw new Error(`Node "${MOTOR_NODE_NAME}" not found in model.`);
+      // Render only the MOTOR node as requested, preserving world transform.
+      motorModel = cloneNodeWithWorldTransform(motorRootSource);
+      motorModel.updateMatrixWorld(true);
+      const motorRoot = motorModel;
+      motorRoot.traverse(obj=>{
+        if(obj.isMesh) {
+          console.log('Motor mesh found:', obj.name);
+          motorMeshes[obj.name] = obj;
+          const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+          mats.forEach((mat) => motorMaterialNames.add(String((mat && mat.name) || '(unnamed material)')));
+          applyRenderableMaterial(obj);
+          meshCount++;
         }
-
-        // Render only the MOTOR node as requested, preserving world transform.
-        motorModel = cloneNodeWithWorldTransform(motorRootSource);
-        motorModel.updateMatrixWorld(true);
-        const motorRoot = motorModel;
-        motorRoot.traverse(obj=>{
-          if(obj.isMesh) {
-            console.log('Motor mesh found:', obj.name);
-            motorMeshes[obj.name] = obj;
-            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-            mats.forEach((mat) => motorMaterialNames.add(String((mat && mat.name) || '(unnamed material)')));
-            applyRenderableMaterial(obj);
-            meshCount++;
-          }
-        });
-
-        motorScene.add(motorModel);
-        fitCameraToObject(motorCamera, motorControls, motorRoot);
-        console.log('Motor material names:', [...motorMaterialNames]);
-        console.log('Motor model loaded and centered. Rendering only MOTOR node.');
-        document.getElementById('debug-info').textContent = `Model loaded successfully! Found ${meshCount} motor mesh(es) under "${MOTOR_NODE_NAME}".`;
-      }, (error) => {
-        console.error('Three.js parse error:', error);
-        document.getElementById('debug-info').textContent = 'Parse error: ' + error.message;
       });
+
+      motorScene.add(motorModel);
+      fitCameraToObject(motorCamera, motorControls, motorRoot);
+      console.log('Motor material names:', [...motorMaterialNames]);
+      console.log('Motor model loaded and centered. Rendering only MOTOR node.');
+      updateDebugInfo(`Model loaded successfully! Found ${meshCount} motor mesh(es) under "${MOTOR_NODE_NAME}".`);
     })
     .catch(error => {
       console.error('Fetch error:', error);
-      document.getElementById('debug-info').textContent = 'Fetch error: ' + error.message;
+      updateDebugInfo('Model load error: ' + getFriendlyModelLoadMessage(error));
     });
 }
 
@@ -1370,93 +1396,83 @@ async function buildSeatTextureMapFromStyles() {
 }
 
 async function createCombinedPreviewModelFromGLB() {
-  return new Promise((resolve, reject) => {
-    const loader = new THREE.GLTFLoader();
-    loader.load(
-      MODEL_PATH,
-      async (gltf) => {
-        try {
-          const sourceScene = gltf.scene;
-          sourceScene.updateMatrixWorld(true);
+  try {
+    const sourceScene = await loadModelScene(MODEL_PATH);
+    sourceScene.updateMatrixWorld(true);
 
-          const motorRootSource = getNodeByName(sourceScene, MOTOR_NODE_NAME);
-          const seatRootSource = getNodeByName(sourceScene, SEAT_NODE_NAME);
-          if (!motorRootSource) throw new Error(`Node "${MOTOR_NODE_NAME}" not found in model.`);
-          if (!seatRootSource) throw new Error(`Node "${SEAT_NODE_NAME}" not found in model.`);
+    const motorRootSource = getNodeByName(sourceScene, MOTOR_NODE_NAME);
+    const seatRootSource = getNodeByName(sourceScene, SEAT_NODE_NAME);
+    if (!motorRootSource) throw new Error(`Node "${MOTOR_NODE_NAME}" not found in model.`);
+    if (!seatRootSource) throw new Error(`Node "${SEAT_NODE_NAME}" not found in model.`);
 
-          const motorPreview = cloneNodeWithWorldTransform(motorRootSource);
-          const seatPreview = cloneNodeWithWorldTransform(seatRootSource);
-          const textureByPart = await buildSeatTextureMapFromStyles();
-          const stockSeatMesh = getNodeByName(motorPreview, 'seatwithmotor');
-          if (stockSeatMesh) stockSeatMesh.visible = false;
+    const motorPreview = cloneNodeWithWorldTransform(motorRootSource);
+    const seatPreview = cloneNodeWithWorldTransform(seatRootSource);
+    const textureByPart = await buildSeatTextureMapFromStyles();
+    const stockSeatMesh = getNodeByName(motorPreview, 'seatwithmotor');
+    if (stockSeatMesh) stockSeatMesh.visible = false;
 
-          motorPreview.traverse((obj) => {
-            if (!obj.isMesh) return;
-            applyRenderableMaterial(obj);
-            if (String(obj.name || '').trim().toLowerCase() === 'seatwithmotor') {
-              obj.visible = false;
-              return;
-            }
-            const newMat = obj.material.clone();
-            if (customization.bodyColor === 'red') {
-              newMat.color.setHex(0xff0000);
-            } else if (customization.bodyColor === 'black') {
-              newMat.color.setHex(0x1a1a1a);
-            } else if (customization.bodyColor === 'blue') {
-              newMat.color.setHex(0x0066ff);
-            }
-            newMat.needsUpdate = true;
-            obj.material = newMat;
-            obj.castShadow = true;
-            obj.receiveShadow = true;
-          });
+    motorPreview.traverse((obj) => {
+      if (!obj.isMesh) return;
+      applyRenderableMaterial(obj);
+      if (String(obj.name || '').trim().toLowerCase() === 'seatwithmotor') {
+        obj.visible = false;
+        return;
+      }
+      const newMat = obj.material.clone();
+      if (customization.bodyColor === 'red') {
+        newMat.color.setHex(0xff0000);
+      } else if (customization.bodyColor === 'black') {
+        newMat.color.setHex(0x1a1a1a);
+      } else if (customization.bodyColor === 'blue') {
+        newMat.color.setHex(0x0066ff);
+      }
+      newMat.needsUpdate = true;
+      obj.material = newMat;
+      obj.castShadow = true;
+      obj.receiveShadow = true;
+    });
 
-          seatPreview.traverse((obj) => {
-            if (!obj.isMesh) return;
-            applyRenderableMaterial(obj);
+    seatPreview.traverse((obj) => {
+      if (!obj.isMesh) return;
+      applyRenderableMaterial(obj);
 
-            const newMat = obj.material.clone();
-            const partName = resolveSeatPartForMesh(obj, seatPreview);
-            const style = partName ? seatPartStyles[partName] : null;
-            if (isStitchMeshObject(obj)) {
-              const stitchColor = partName ? seatStitchStyles[partName] : null;
-              applyStitchMaterialOverrides(newMat, stitchColor || 'white');
-            } else {
-              if (style && style.type === 'color') {
-                const hex = getColorHex(style.value);
-                if (hex !== null) newMat.color.setHex(hex);
-                newMat.map = null;
-              } else if (style && style.type === 'texture') {
-                const texture = textureByPart[partName];
-                if (texture) {
-                  newMat.map = texture;
-                  newMat.color.setHex(0xffffff);
-                } else {
-                  newMat.map = null;
-                }
-              }
-            }
-
-            newMat.needsUpdate = true;
-            obj.material = newMat;
-            obj.castShadow = true;
-            obj.receiveShadow = true;
-          });
-
-          alignSeatPreviewToStockSeat(motorPreview, seatPreview);
-
-          const combinedModel = new THREE.Group();
-          combinedModel.add(motorPreview);
-          combinedModel.add(seatPreview);
-          resolve(combinedModel);
-        } catch (error) {
-          reject(error);
+      const newMat = obj.material.clone();
+      const partName = resolveSeatPartForMesh(obj, seatPreview);
+      const style = partName ? seatPartStyles[partName] : null;
+      if (isStitchMeshObject(obj)) {
+        const stitchColor = partName ? seatStitchStyles[partName] : null;
+        applyStitchMaterialOverrides(newMat, stitchColor || 'white');
+      } else {
+        if (style && style.type === 'color') {
+          const hex = getColorHex(style.value);
+          if (hex !== null) newMat.color.setHex(hex);
+          newMat.map = null;
+        } else if (style && style.type === 'texture') {
+          const texture = textureByPart[partName];
+          if (texture) {
+            newMat.map = texture;
+            newMat.color.setHex(0xffffff);
+          } else {
+            newMat.map = null;
+          }
         }
-      },
-      undefined,
-      (error) => reject(error)
-    );
-  });
+      }
+
+      newMat.needsUpdate = true;
+      obj.material = newMat;
+      obj.castShadow = true;
+      obj.receiveShadow = true;
+    });
+
+    alignSeatPreviewToStockSeat(motorPreview, seatPreview);
+
+    const combinedModel = new THREE.Group();
+    combinedModel.add(motorPreview);
+    combinedModel.add(seatPreview);
+    return combinedModel;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function applySeatStylesToSeatModel() {
@@ -1594,9 +1610,7 @@ function initSeatCustomization(){
   }
   if(!seatRenderer || !seatControls || !seatScene || !seatCamera) return;
   
-  const loader = new THREE.GLTFLoader();
-  loader.load(MODEL_PATH,(gltf)=>{
-    const fullModel = gltf.scene;
+  loadModelScene(MODEL_PATH).then((fullModel)=>{
     const seatRoot = getNodeByName(fullModel, SEAT_NODE_NAME);
     if(seatRoot){
       // Preserve world transform so preview alignment matches MOTOR coordinates.
@@ -1662,9 +1676,9 @@ function initSeatCustomization(){
       console.error(`❌ Seat group "${SEAT_NODE_NAME}" not found in model.`);
       alert(`Seat group "${SEAT_NODE_NAME}" not found in hondabeat.glb.`);
     }
-  }, undefined, (error)=>{
+  }).catch((error)=>{
     console.error('❌ Error loading seat model:', error);
-    alert('Error loading seat model. Verify that hondabeat.glb exists in the project root directory.');
+    alert(getFriendlyModelLoadMessage(error));
   });
 }
 
@@ -1751,9 +1765,9 @@ function showPreview(){
     previewAnimationId = null;
   }
 
-  const fallbackWidth = (motorContainer && motorContainer.clientWidth) ? motorContainer.clientWidth : 960;
-  const width = Math.max(previewContainer.clientWidth || 0, fallbackWidth, 640);
-  const height = Math.max(previewContainer.clientHeight || 0, 560);
+  const fallbackWidth = (motorContainer && motorContainer.clientWidth) ? motorContainer.clientWidth : window.innerWidth;
+  const width = Math.max(previewContainer.clientWidth || 0, Math.min(fallbackWidth, window.innerWidth), 280);
+  const height = Math.max(previewContainer.clientHeight || 0, window.matchMedia('(max-width: 768px)').matches ? 340 : 560);
   previewContainer.style.minHeight = `${height}px`;
 
   const previewScene=new THREE.Scene();
