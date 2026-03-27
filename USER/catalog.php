@@ -724,9 +724,11 @@ html[data-theme="light"] .btn-secondary {
       <div class="top-sales-grid">
         <?php foreach ($top_sales as $top): ?>
           <?php
-            $topImageUrl = rbj_template_image_url($top['image_path'] ?? '');
-            if ($topImageUrl === '') {
-                $topChoiceItems = rbj_find_shapi_choices((string)$top['name']);
+            $topRawImagePath = (string)($top['image_path'] ?? '');
+            $topImageUrl = rbj_template_image_url($topRawImagePath);
+            $topChoiceItems = [];
+            if ($topImageUrl === '' || rbj_is_placeholder_catalog_image($topRawImagePath)) {
+                $topChoiceItems = rbj_find_shapi_choices((string)$top['name'], $conn, (int)$top['id']);
                 if (!empty($topChoiceItems)) {
                     $topImageUrl = (string)$topChoiceItems[0]['image_url'];
                 }
@@ -816,10 +818,11 @@ html[data-theme="light"] .btn-secondary {
           <a class="product-link" href="product.php?id=<?php echo (int)$product['id']; ?>">
             <div class="product-image">
               <?php
-                $cardImageUrl = rbj_template_image_url($product['image_path'] ?? '');
+                $rawCardImagePath = (string)($product['image_path'] ?? '');
+                $cardImageUrl = rbj_template_image_url($rawCardImagePath);
                 $choiceItems = [];
-                if ($cardImageUrl === '') {
-                    $choiceItems = rbj_find_shapi_choices((string)$product['name']);
+                if ($cardImageUrl === '' || rbj_is_placeholder_catalog_image($rawCardImagePath)) {
+                    $choiceItems = rbj_find_shapi_choices((string)$product['name'], $conn, (int)$product['id']);
                     if (!empty($choiceItems)) {
                         $cardImageUrl = (string)$choiceItems[0]['image_url'];
                     }

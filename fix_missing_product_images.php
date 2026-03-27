@@ -51,7 +51,7 @@ foreach ($templates as $template) {
 
     $selectedPath = $imagePath;
     if ($selectedPath === '') {
-        $choices = rbj_find_shapi_choices($name);
+        $choices = rbj_find_shapi_choices($name, $conn, $id);
         if (!empty($choices)) {
             $url = (string)$choices[0]['image_url']; // ../shapi/folder/file.png
             $selectedPath = ltrim(str_replace('\\', '/', preg_replace('#^\.\./#', '', $url) ?? $url), '/');

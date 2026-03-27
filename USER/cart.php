@@ -258,7 +258,7 @@ while ($item = $cart_items->fetch_assoc()) {
     $imageUrl = rbj_template_image_url((string)($item['image_path'] ?? ''));
     $customizationLabel = trim((string)($item['customizations'] ?? ''));
     if ($customizationLabel !== '' && strcasecmp($customizationLabel, 'Standard package') !== 0) {
-        $choiceItems = rbj_find_shapi_choices((string)($item['name'] ?? ''));
+        $choiceItems = rbj_find_shapi_choices((string)($item['name'] ?? ''), $conn, (int)($item['template_id'] ?? 0));
         $wanted = rbj_shapi_normalize($customizationLabel);
         foreach ($choiceItems as $choice) {
             $choiceLabel = rbj_shapi_normalize((string)($choice['label'] ?? ''));
@@ -573,7 +573,7 @@ html[data-theme="light"] #selected-count {
               <h3><?php echo htmlspecialchars($item['name']); ?></h3>
               <?php 
                 // Get available choices for this product
-                $choiceItems = rbj_find_shapi_choices((string)($item['name'] ?? ''));
+                $choiceItems = rbj_find_shapi_choices((string)($item['name'] ?? ''), $conn, (int)($item['template_id'] ?? 0));
                 $currentChoiceKey = trim((string)($item['choice_key'] ?? ''));
                 $currentCustomization = trim((string)($item['customizations'] ?? ''));
                 

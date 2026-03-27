@@ -50,32 +50,17 @@ html[data-theme="light"] .hero p, html[data-theme="light"] .hero .meta, html[dat
 @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 @media (max-width: 768px) { .navbar { padding: 10px 20px; } .page-shell { padding: 22px 14px 34px; } .hero, .policy-card, .tip-card { padding: 18px; } .hero h1 { font-size: 31px; } }
 </style>
+<?php include __DIR__ . '/partials/user_main_nav_base.php'; ?>
 <?php include __DIR__ . '/partials/user_navbar_theme.php'; ?>
 </head>
 <body>
-<nav class="navbar">
-  <a href="index.php" class="logo"><img src="../rbjlogo.png" alt="RBJ Accessories Logo"><span>RBJ Accessories</span></a>
-  <div class="nav-links">
-    <a href="index.php">Home</a>
-    <a href="catalog.php">Shop</a>
-    <a href="customize.php">Customize</a>
-    <a href="shipping_returns.php" class="active">Shipping & Returns</a>
-    <?php if ($is_logged_in): ?>
-    <a href="cart.php" class="nav-cart-link" title="Cart" aria-label="Cart"><i class='bx bx-cart'></i><span class="cart-count" data-cart-count style="<?php echo $cart_count > 0 ? '' : 'display:none;'; ?>"><?php echo (int)$cart_count; ?></span></a>
-    <?php endif; ?>
-    <?php if ($is_logged_in): ?>
-    <?php include __DIR__ . '/partials/account_menu.php'; ?>
-    <?php else: ?>
-    <a href="../login.php">Login</a>
-    <?php endif; ?>
-  </div>
-</nav>
+<?php include __DIR__ . '/partials/user_main_nav.php'; ?>
 <main class="page-shell">
   <section class="hero">
     <span class="eyebrow"><i class='bx bx-package'></i> Shipping & Returns</span>
     <h1>Important Information About Delivery, Fulfillment, and Return Requests.</h1>
     <p>This page outlines general shipping and return expectations for RBJ Accessories website orders. Delivery timelines and return handling may vary depending on item type, customization level, order condition, and review outcome.</p>
-    <div class="meta">Last updated: March 20, 2026</div>
+    <div class="meta">Last updated: March 27, 2026</div>
   </section>
   <section class="grid">
     <article class="policy-card"><h2>Shipping Overview</h2><p>Orders are processed based on product availability, order confirmation status, and fulfillment readiness. Customized items may require additional preparation compared with standard ready-to-order items.</p><ul><li>Processing timelines may vary depending on order complexity.</li><li>Shipping progress can be followed through order-related pages where available.</li><li>Customers should provide accurate delivery details to avoid delays.</li></ul></article>

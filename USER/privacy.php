@@ -53,32 +53,17 @@ html[data-theme="light"] .hero p, html[data-theme="light"] .hero .meta, html[dat
 html[data-theme="light"] .toc a { color: #7a211b; }
 @media (max-width: 768px) { .navbar { padding: 10px 20px; } .page-shell { padding: 22px 14px 34px; } .hero, .toc, .policy-card { padding: 18px; } .hero h1 { font-size: 31px; } }
 </style>
+<?php include __DIR__ . '/partials/user_main_nav_base.php'; ?>
 <?php include __DIR__ . '/partials/user_navbar_theme.php'; ?>
 </head>
 <body>
-<nav class="navbar">
-  <a href="index.php" class="logo"><img src="../rbjlogo.png" alt="RBJ Accessories Logo"><span>RBJ Accessories</span></a>
-  <div class="nav-links">
-    <a href="index.php">Home</a>
-    <a href="catalog.php">Shop</a>
-    <a href="customize.php">Customize</a>
-    <a href="privacy.php" class="active">Privacy</a>
-    <?php if ($is_logged_in): ?>
-    <a href="cart.php" class="nav-cart-link" title="Cart" aria-label="Cart"><i class='bx bx-cart'></i><span class="cart-count" data-cart-count style="<?php echo $cart_count > 0 ? '' : 'display:none;'; ?>"><?php echo (int)$cart_count; ?></span></a>
-    <?php endif; ?>
-    <?php if ($is_logged_in): ?>
-    <?php include __DIR__ . '/partials/account_menu.php'; ?>
-    <?php else: ?>
-    <a href="../login.php">Login</a>
-    <?php endif; ?>
-  </div>
-</nav>
+<?php include __DIR__ . '/partials/user_main_nav.php'; ?>
 <main class="page-shell">
   <section class="hero">
     <span class="eyebrow"><i class='bx bx-lock-alt'></i> Privacy Policy</span>
     <h1>How RBJ Accessories Collects, Uses, and Protects Your Information.</h1>
     <p>This Privacy Policy explains how information may be collected and used when you browse the RBJ Accessories website, create an account, place orders, submit support requests, or use site features such as live chat and customization tools.</p>
-    <div class="meta">Last updated: March 20, 2026</div>
+    <div class="meta">Last updated: March 27, 2026</div>
   </section>
   <section class="toc">
     <h2>Quick Navigation</h2>

@@ -896,6 +896,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
             exit();
         } catch (Throwable $e) {
             $conn->rollback();
+            error_log('RBJ buy_now order failed: ' . $e->getMessage());
             $toast_type = 'error';
             $toast_message = 'Unable to place order right now. Please try again.';
         }
@@ -1085,6 +1086,18 @@ body { min-height:100vh; background: linear-gradient(135deg,#1b1b1b,#111); color
   cursor:pointer;
   margin-top: 14px;
 }
+.place-btn:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  filter: grayscale(0.12);
+}
+.place-note {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.75);
+}
+.place-note a { color: #9be8ba; }
 
 .empty-state { text-align:center; color: rgba(255,255,255,0.8); padding: 20px 0; }
 
@@ -1186,6 +1199,8 @@ html[data-theme="light"] .inline-link { color: #9f2f26; }
 html[data-theme="light"] .address-option { background: #fff; border-color: rgba(217,4,41,0.22); }
 html[data-theme="light"] .address-option.selected { border-color: rgba(217,4,41,0.6); box-shadow: 0 0 0 1px rgba(217,4,41,0.2) inset; }
 html[data-theme="light"] .address-badge { background: rgba(217,4,41,0.12); color: #9f2f26; border-color: rgba(217,4,41,0.24); }
+html[data-theme="light"] .place-note { color: #6d5a55; }
+html[data-theme="light"] .place-note a { color: #9f2f26; }
 html[data-theme="light"] .account-menu {
   background: #fff8f5;
   border: 1px solid rgba(217,4,41, 0.2);
@@ -1233,6 +1248,7 @@ html[data-theme="light"] .account-menu .menu-divider {
     <?php if ($source === 'product'): ?>
       <input type="hidden" name="template_id" value="<?php echo (int)$template_id; ?>">
       <input type="hidden" name="quantity" value="<?php echo (int)$quantity; ?>">
+      <input type="hidden" name="customizations" value="<?php echo htmlspecialchars($requested_customizations); ?>">
       <input type="hidden" name="choice_key" value="<?php echo htmlspecialchars($requested_choice_key); ?>">
     <?php endif; ?>
 
@@ -1487,7 +1503,18 @@ html[data-theme="light"] .account-menu .menu-divider {
             <span id="totalAmount" data-merchandise="<?php echo htmlspecialchars((string)$merchandise_subtotal); ?>">&#8369;<?php echo number_format($total_payment, 0); ?></span>
           </div>
 
-          <button type="submit" name="place_order" class="place-btn" <?php echo (empty($items) || !$has_checkout_profile) ? 'disabled' : ''; ?>>Place Order</button>
+          <button type="submit" name="place_order" class="place-btn" <?php echo empty($items) ? 'disabled' : ''; ?>>Place Order</button>
+          <?php if (empty($items)): ?>
+            <div class="place-note">
+              No products are loaded for checkout yet. Return to <a class="inline-link" href="catalog.php">Shop Catalog</a> and choose an item first.
+            </div>
+          <?php elseif (!$has_checkout_profile): ?>
+            <div class="place-note">
+              The order is not pushing through because required checkout details are incomplete. Update
+              <a class="inline-link" href="<?php echo !empty($addresses) ? 'manage_addresses.php' : 'account_info.php'; ?>"><?php echo !empty($addresses) ? 'Address Book' : 'Account Info'; ?></a>
+              and then click Place Order again.
+            </div>
+          <?php endif; ?>
         </section>
       </div>
     </div>

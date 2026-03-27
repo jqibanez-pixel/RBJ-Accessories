@@ -37,6 +37,38 @@ function rbj_shapi_humanize(string $value): string
     return ucwords($value);
 }
 
+function rbj_shapi_alias_map(): array
+{
+    static $map = null;
+    if ($map !== null) {
+        return $map;
+    }
+
+    $map = [
+        rbj_shapi_normalize('BRIDE DARK EDITION SEAT COVER | UNIVERSAL') => 'bride_dark_edition_universal_seat_cover',
+        rbj_shapi_normalize('BRIDE UNIVERSAL SEAT COVER') => 'bride_universal_seat_cover',
+        rbj_shapi_normalize('INDO CONCEPT SEATS | NEW DESIGN') => 'indoseat_newdesign',
+    ];
+
+    return $map;
+}
+
+function rbj_shapi_extract_folder_from_path(?string $path): string
+{
+    $path = trim((string)$path);
+    if ($path === '') {
+        return '';
+    }
+
+    $path = str_replace('\\', '/', $path);
+    $path = preg_replace('#^\.\./#', '', $path) ?? $path;
+    if (!preg_match('#(?:^|/)shapi/([^/]+)/#i', $path, $matches)) {
+        return '';
+    }
+
+    return urldecode((string)($matches[1] ?? ''));
+}
+
 function rbj_template_image_url(?string $imagePath): string
 {
     $imagePath = trim((string)$imagePath);
@@ -51,6 +83,22 @@ function rbj_template_image_url(?string $imagePath): string
         return '../' . $imagePath;
     }
     return '../templates/' . $imagePath;
+}
+
+function rbj_is_placeholder_catalog_image(?string $imagePath): bool
+{
+    $imagePath = trim((string)$imagePath);
+    if ($imagePath === '') {
+        return false;
+    }
+
+    $imagePath = str_replace('\\', '/', $imagePath);
+    $baseName = strtolower(basename($imagePath));
+    if ($baseName === 'rbjlogo.png') {
+        return true;
+    }
+
+    return (bool)preg_match('/^cover\d+\.(jpg|jpeg|png|webp|gif)$/i', $baseName);
 }
 
 function rbj_shapi_catalog_index(): array
@@ -129,33 +177,126 @@ function rbj_shapi_catalog_index(): array
     return $index;
 }
 
-function rbj_find_shapi_choices(string $productName): array
+function rbj_shapi_find_folder_items(string $folderName): array
 {
     $index = rbj_shapi_catalog_index();
     if (empty($index)) {
         return [];
     }
 
+    $wanted = rbj_shapi_normalize($folderName);
+    if ($wanted === '') {
+        return [];
+    }
+
+    foreach ($index as $folderData) {
+        if (($folderData['folder_key'] ?? '') === $wanted) {
+            return (array)($folderData['items'] ?? []);
+        }
+    }
+
+    return [];
+}
+
+function rbj_shapi_infer_folder_from_template(mysqli $conn, int $templateId): string
+{
+    static $cache = [];
+
+    $templateId = (int)$templateId;
+    if ($templateId <= 0) {
+        return '';
+    }
+
+    if (array_key_exists($templateId, $cache)) {
+        return $cache[$templateId];
+    }
+
+    $folder = '';
+
+    if (rbj_db_table_exists($conn, 'product_images')) {
+        $stmt = $conn->prepare('SELECT image_path FROM product_images WHERE template_id = ? ORDER BY is_primary DESC, id ASC');
+        if ($stmt) {
+            $stmt->bind_param('i', $templateId);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            while ($row = $res->fetch_assoc()) {
+                $candidate = rbj_shapi_extract_folder_from_path((string)($row['image_path'] ?? ''));
+                if ($candidate !== '') {
+                    $folder = $candidate;
+                    break;
+                }
+            }
+            $stmt->close();
+        }
+    }
+
+    if ($folder === '' && rbj_db_table_exists($conn, 'customization_templates')) {
+        $stmt = $conn->prepare('SELECT image_path FROM customization_templates WHERE id = ? LIMIT 1');
+        if ($stmt) {
+            $stmt->bind_param('i', $templateId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            $folder = rbj_shapi_extract_folder_from_path((string)($row['image_path'] ?? ''));
+        }
+    }
+
+    $cache[$templateId] = $folder;
+    return $folder;
+}
+
+function rbj_find_shapi_choices(string $productName, ?mysqli $conn = null, int $templateId = 0): array
+{
+    $index = rbj_shapi_catalog_index();
+    if (empty($index)) {
+        return [];
+    }
+
+    if ($conn instanceof mysqli && $templateId > 0) {
+        $folderFromTemplate = rbj_shapi_infer_folder_from_template($conn, $templateId);
+        if ($folderFromTemplate !== '') {
+            $items = rbj_shapi_find_folder_items($folderFromTemplate);
+            if (!empty($items)) {
+                return $items;
+            }
+        }
+    }
+
     $productKey = rbj_shapi_normalize($productName);
     if ($productKey === '') {
         return [];
     }
+
+    $aliasFolder = rbj_shapi_alias_map()[$productKey] ?? '';
+    if ($aliasFolder !== '') {
+        $items = rbj_shapi_find_folder_items($aliasFolder);
+        if (!empty($items)) {
+            return $items;
+        }
+    }
+
     $productTokens = rbj_shapi_tokens($productName);
 
     $bestScore = 0.0;
     $bestItems = [];
+    $bestCommonCount = 0;
+    $bestHasDirectNameMatch = false;
     foreach ($index as $folderData) {
         $folderKey = $folderData['folder_key'];
         $score = 0.0;
+        $hasDirectNameMatch = false;
 
         if ($productKey === $folderKey) {
             $score += 100.0;
+            $hasDirectNameMatch = true;
         }
         if (strpos($folderKey, $productKey) !== false || strpos($productKey, $folderKey) !== false) {
             $score += 20.0;
+            $hasDirectNameMatch = true;
         }
 
         $folderTokens = $folderData['tokens'];
+        $commonCount = 0;
         if (!empty($productTokens) && !empty($folderTokens)) {
             $common = array_intersect($productTokens, $folderTokens);
             $commonCount = count($common);
@@ -168,10 +309,16 @@ function rbj_find_shapi_choices(string $productName): array
         if ($score > $bestScore) {
             $bestScore = $score;
             $bestItems = $folderData['items'];
+            $bestCommonCount = $commonCount;
+            $bestHasDirectNameMatch = $hasDirectNameMatch;
         }
     }
 
     if ($bestScore < 10.0) {
+        return [];
+    }
+
+    if (!$bestHasDirectNameMatch && $bestCommonCount < 2) {
         return [];
     }
 

@@ -465,12 +465,23 @@ html[data-theme="light"] .rbj-chat-head {
   border-bottom-color: var(--rbj-border, rgba(217,4,41,0.22));
 }
 
+html[data-theme="light"] .rbj-chat-head .title-wrap strong {
+  color: #7a211b;
+}
+
 html[data-theme="light"] .rbj-chat-head .title-wrap span {
   color: var(--rbj-muted, #9f4b43);
 }
 
+html[data-theme="light"] .rbj-chat-presence span {
+  background: #fff;
+  border-color: rgba(217,4,41,0.18);
+  color: #8d4a45;
+}
+
 html[data-theme="light"] .rbj-chat-head-actions button,
 html[data-theme="light"] .rbj-chat-head-actions a {
+  background: rgba(255,255,255,0.9);
   border-color: var(--rbj-border, rgba(217,4,41,0.3));
   color: var(--rbj-text, #7a211b);
 }
@@ -499,7 +510,17 @@ html[data-theme="light"] .rbj-chat-msg.bot .rbj-chat-meta {
   color: #9f4b43;
 }
 
+html[data-theme="light"] .rbj-chat-msg.typing .rbj-chat-bubble {
+  background: #fff4f1;
+  border-color: var(--rbj-border, rgba(217,4,41,0.22));
+}
+
+html[data-theme="light"] .rbj-typing-dot {
+  background: #b95863;
+}
+
 html[data-theme="light"] .rbj-chat-form {
+  background: #fffdfd;
   border-top-color: var(--rbj-border, rgba(217,4,41,0.22));
 }
 
@@ -516,6 +537,20 @@ html[data-theme="light"] .rbj-chat-form input::placeholder {
 html[data-theme="light"] .rbj-chat-form button {
   background: linear-gradient(145deg, #d90429, #ef233c);
   color: #fff;
+}
+
+html[data-theme="light"] .rbj-chat-tools {
+  color: #8d4a45;
+}
+
+html[data-theme="light"] .rbj-chat-attach {
+  background: #fff;
+  border-color: rgba(217,4,41,0.22);
+  color: #7a211b;
+}
+
+html[data-theme="light"] .rbj-chat-attach-clear {
+  color: #b63a48;
 }
 
 html[data-theme="light"] .rbj-chat-attachment-card {
@@ -540,6 +575,20 @@ html[data-theme="light"] .rbj-chat-launcher .rbj-chat-badge {
   background: #fff;
   color: #8d2720;
   box-shadow: 0 0 0 2px rgba(217,4,41,0.3);
+}
+
+html[data-theme="light"] .rbj-chat-lightbox {
+  background: rgba(70, 32, 28, 0.78);
+}
+
+html[data-theme="light"] .rbj-chat-lightbox-caption {
+  color: #fff6f4;
+}
+
+html[data-theme="light"] .rbj-chat-lightbox-close {
+  background: rgba(255,255,255,0.92);
+  color: #7a211b;
+  border-color: rgba(217,4,41,0.18);
 }
 .rbj-chat-lightbox {
   position: fixed;
@@ -887,6 +936,15 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
     syncTypingBubble(summary || null);
   }
 
+  function scrollFeedToLatest() {
+    if (!feed) return;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        feed.scrollTop = feed.scrollHeight;
+      });
+    });
+  }
+
   function ensureTypingBubble(role) {
     var existing = feed.querySelector('.rbj-chat-msg.typing.' + role);
     if (existing) return existing;
@@ -897,7 +955,7 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
     bubble.innerHTML = '<span class="rbj-typing-dot"></span><span class="rbj-typing-dot"></span><span class="rbj-typing-dot"></span>';
     div.appendChild(bubble);
     feed.appendChild(div);
-    feed.scrollTop = feed.scrollHeight;
+    scrollFeedToLatest();
     return div;
   }
 
@@ -990,6 +1048,9 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
     panel.classList.toggle('show', !!state.open);
     launcher.style.display = state.open ? 'none' : 'inline-flex';
     applyDynamicPosition();
+    if (state.open) {
+      scrollFeedToLatest();
+    }
   }
 
   function setUnread(count) {
@@ -1059,7 +1120,9 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
       updates.forEach(updateMessageStatus);
       renderPresence(data.presence || null);
       if (items.length) {
-        feed.scrollTop = feed.scrollHeight;
+        scrollFeedToLatest();
+      } else if (state.open) {
+        scrollFeedToLatest();
       }
       if (state.open) {
         await markRead();
@@ -1109,6 +1172,7 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
     } catch (e) {}
     renderVisibility();
     await fetchChat(false);
+    scrollFeedToLatest();
     await markRead();
     updatePresenceState(false, true);
     input.focus();
@@ -1205,6 +1269,7 @@ $rbj_chat_csrf_token = (string)$_SESSION['csrf_token'];
   fetchChat(true);
   fetchUnreadCount();
   if (state.open) {
+    scrollFeedToLatest();
     markRead();
     updatePresenceState(false, true);
   }

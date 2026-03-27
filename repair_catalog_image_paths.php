@@ -155,7 +155,7 @@ foreach ($templates as $tpl) {
 
     // Preferred folder: from shapi helper match, fallback to current folder.
     $preferredFolder = '';
-    $choices = rbj_find_shapi_choices($tpl['name']);
+    $choices = rbj_find_shapi_choices($tpl['name'], $conn, (int)$tpl['id']);
     if (!empty($choices)) {
         $choicePath = str_replace('\\', '/', preg_replace('#^\.\./#', '', (string)($choices[0]['image_url'] ?? '')) ?? '');
         $preferredFolder = rbj_path_to_folder($choicePath);
@@ -243,4 +243,3 @@ if (count($updates) > 30) {
 }
 
 $conn->close();
-

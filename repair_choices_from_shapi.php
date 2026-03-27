@@ -46,7 +46,7 @@ foreach ($templates as $template) {
     $templateName = (string)$template['name'];
     $currentTemplatePath = trim((string)($template['image_path'] ?? ''));
 
-    $choices = rbj_find_shapi_choices($templateName);
+    $choices = rbj_find_shapi_choices($templateName, $conn, $templateId);
     if (count($choices) < 2) {
         continue;
     }

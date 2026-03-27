@@ -330,6 +330,7 @@ if ($product) {
                 'image_url' => $imageUrl,
                 'file_name' => basename($rawPath),
                 'choice_key' => $buildChoiceKey($label, $imageUrl),
+                'is_placeholder' => rbj_is_placeholder_catalog_image($rawPath),
                 'stock_quantity' => $imageStockColumnExists
                     ? max(0, (int)($img['stock_quantity'] ?? 0))
                     : max(1, (int)($product['stock_quantity'] ?? 1))
@@ -350,7 +351,7 @@ if ($product) {
         }
     }
 
-    $shapiChoices = rbj_find_shapi_choices((string)$product['name']);
+    $shapiChoices = rbj_find_shapi_choices((string)$product['name'], $conn, $templateId);
     foreach ($shapiChoices as $choice) {
         $choiceImageUrl = trim((string)($choice['image_url'] ?? ''));
         if ($choiceImageUrl === '') {
@@ -369,6 +370,7 @@ if ($product) {
             'image_url' => $choiceImageUrl,
             'file_name' => basename($pathFromUrl),
             'choice_key' => $choiceKey,
+            'is_placeholder' => false,
             'stock_quantity' => (int)($choiceStockMap[$choiceKey]['stock_quantity'] ?? 0)
         ];
         $existingImageKeys[$choiceImageKey] = true;
@@ -394,6 +396,7 @@ if ($product) {
             'image_url' => $savedImageUrl,
             'file_name' => $savedImageUrl !== '' ? basename((string)(parse_url($savedImageUrl, PHP_URL_PATH) ?? '')) : '',
             'choice_key' => (string)$savedChoiceKey,
+            'is_placeholder' => false,
             'stock_quantity' => (int)($savedChoice['stock_quantity'] ?? 0)
         ];
         if ($savedImageKey !== '') {
@@ -401,6 +404,22 @@ if ($product) {
         }
         if ($main_image_url === '' && $savedImageUrl !== '') {
             $main_image_url = $savedImageUrl;
+        }
+    }
+
+    $hasRealDisplayChoice = false;
+    foreach ($product_choices as $choice) {
+        if (!((bool)($choice['is_placeholder'] ?? false))) {
+            $hasRealDisplayChoice = true;
+            break;
+        }
+    }
+    if ($hasRealDisplayChoice) {
+        $product_choices = array_values(array_filter($product_choices, static function (array $choice): bool {
+            return !((bool)($choice['is_placeholder'] ?? false));
+        }));
+        if (!empty($product_choices)) {
+            $main_image_url = (string)($product_choices[0]['image_url'] ?? $main_image_url);
         }
     }
 
@@ -1013,6 +1032,144 @@ body { min-height:100vh; background: linear-gradient(135deg,#1b1b1b,#111); color
   text-align: center;
   color: rgba(255,255,255,0.7);
   padding: 20px;
+}
+
+html[data-theme="light"] body {
+  background: linear-gradient(180deg, #f8f3f2 0%, #fffdfa 100%);
+  color: #241816;
+}
+
+html[data-theme="light"] .back-link {
+  color: #6a4a45;
+}
+
+html[data-theme="light"] .back-link:hover {
+  color: #b42318;
+}
+
+html[data-theme="light"] .media-panel,
+html[data-theme="light"] .info-panel,
+html[data-theme="light"] .reviews-wrap,
+html[data-theme="light"] .not-found {
+  background: rgba(255,255,255,0.96);
+  border-color: rgba(180, 35, 24, 0.12);
+  box-shadow: 0 18px 38px rgba(122, 46, 34, 0.08);
+}
+
+html[data-theme="light"] .main-image {
+  background: linear-gradient(145deg, #f7ece8, #ffffff);
+}
+
+html[data-theme="light"] .thumb {
+  background: #fff7f5;
+  border-color: rgba(180, 35, 24, 0.14);
+}
+
+html[data-theme="light"] .thumb.is-active {
+  border-color: #1f9d55;
+  box-shadow: 0 0 0 1px rgba(31, 157, 85, 0.18);
+}
+
+html[data-theme="light"] .product-submeta,
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .rating-summary,
+html[data-theme="light"] .review-meta,
+html[data-theme="light"] .review-empty {
+  color: #6d5a55;
+}
+
+html[data-theme="light"] .price-box,
+html[data-theme="light"] .review-form,
+html[data-theme="light"] .review-card {
+  background: #fff8f6;
+  border-color: rgba(180, 35, 24, 0.14);
+}
+
+html[data-theme="light"] .chip {
+  background: #fff7f5;
+  border-color: rgba(180, 35, 24, 0.14);
+  color: #3a2622;
+}
+
+html[data-theme="light"] .chip.active {
+  background: rgba(180, 35, 24, 0.1);
+  border-color: rgba(180, 35, 24, 0.3);
+  color: #8f1d13;
+}
+
+html[data-theme="light"] .desc,
+html[data-theme="light"] .review-comment,
+html[data-theme="light"] .review-meta strong,
+html[data-theme="light"] .reviews-title,
+html[data-theme="light"] .product-title {
+  color: #241816;
+}
+
+html[data-theme="light"] .choice-option {
+  background: #fff7f5;
+  border-color: rgba(180, 35, 24, 0.18);
+  color: #352320;
+}
+
+html[data-theme="light"] .choice-option .choice-thumb {
+  border-color: rgba(180, 35, 24, 0.12);
+  background: #f4e7e2;
+}
+
+html[data-theme="light"] .choice-option .choice-stock {
+  color: #7b655f;
+}
+
+html[data-theme="light"] .choice-option:hover {
+  border-color: rgba(180, 35, 24, 0.45);
+  color: #8f1d13;
+  background: #fff1ed;
+}
+
+html[data-theme="light"] .choice-option.is-active {
+  border-color: #d9482f;
+  color: #8f1d13;
+  background: rgba(217, 72, 47, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(217, 72, 47, 0.16);
+}
+
+html[data-theme="light"] .choice-option.is-disabled .choice-stock {
+  color: #b54747;
+}
+
+html[data-theme="light"] .qty-control {
+  border-color: rgba(180, 35, 24, 0.16);
+  background: #fff8f6;
+}
+
+html[data-theme="light"] .qty-btn {
+  background: rgba(180, 35, 24, 0.08);
+  color: #4b2f2b;
+}
+
+html[data-theme="light"] .qty-input,
+html[data-theme="light"] .review-form textarea {
+  background: #ffffff;
+  color: #241816;
+  border-color: rgba(180, 35, 24, 0.16);
+}
+
+html[data-theme="light"] .review-form textarea::placeholder {
+  color: #8e7770;
+}
+
+html[data-theme="light"] .star-input label {
+  color: rgba(180, 35, 24, 0.28);
+}
+
+html[data-theme="light"] .btn-add {
+  background: rgba(180, 35, 24, 0.08);
+  border-color: rgba(180, 35, 24, 0.18);
+  color: #4b2f2b;
+}
+
+html[data-theme="light"] .btn-add:hover {
+  background: rgba(180, 35, 24, 0.14);
 }
 
 @media (max-width: 980px) {

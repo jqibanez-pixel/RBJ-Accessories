@@ -60,26 +60,11 @@ html[data-theme="light"] .contact-card a { color: #7a211b; }
 @media (max-width: 900px) { .contact-grid, .branch-grid { grid-template-columns: 1fr; } }
 @media (max-width: 768px) { .navbar { padding: 10px 20px; } .page-shell { padding: 22px 14px 34px; } .intro, .contact-card, .branch-card, .help-card { padding: 18px; } .intro h1 { font-size: 31px; } }
 </style>
+<?php include __DIR__ . '/partials/user_main_nav_base.php'; ?>
 <?php include __DIR__ . '/partials/user_navbar_theme.php'; ?>
 </head>
 <body>
-<nav class="navbar">
-  <a href="index.php" class="logo"><img src="../rbjlogo.png" alt="RBJ Accessories Logo"><span>RBJ Accessories</span></a>
-  <div class="nav-links">
-    <a href="index.php">Home</a>
-    <a href="catalog.php">Shop</a>
-    <a href="customize.php">Customize</a>
-    <a href="contact.php" class="active">Contact</a>
-    <?php if ($is_logged_in): ?>
-    <a href="cart.php" class="nav-cart-link" title="Cart" aria-label="Cart"><i class='bx bx-cart'></i><span class="cart-count" data-cart-count style="<?php echo $cart_count > 0 ? '' : 'display:none;'; ?>"><?php echo (int)$cart_count; ?></span></a>
-    <?php endif; ?>
-    <?php if ($is_logged_in): ?>
-    <?php include __DIR__ . '/partials/account_menu.php'; ?>
-    <?php else: ?>
-    <a href="../login.php">Login</a>
-    <?php endif; ?>
-  </div>
-</nav>
+<?php include __DIR__ . '/partials/user_main_nav.php'; ?>
 <main class="page-shell">
   <section class="intro">
     <span class="eyebrow"><i class='bx bx-headphone'></i> Contact & Support</span>

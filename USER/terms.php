@@ -48,32 +48,17 @@ html[data-theme="light"] .hero, html[data-theme="light"] .term-card { background
 html[data-theme="light"] .hero p, html[data-theme="light"] .hero .meta, html[data-theme="light"] .term-card p, html[data-theme="light"] .term-card li { color: #7a4a45 !important; }
 @media (max-width: 768px) { .navbar { padding: 10px 20px; } .page-shell { padding: 22px 14px 34px; } .hero, .term-card { padding: 18px; } .hero h1 { font-size: 31px; } }
 </style>
+<?php include __DIR__ . '/partials/user_main_nav_base.php'; ?>
 <?php include __DIR__ . '/partials/user_navbar_theme.php'; ?>
 </head>
 <body>
-<nav class="navbar">
-  <a href="index.php" class="logo"><img src="../rbjlogo.png" alt="RBJ Accessories Logo"><span>RBJ Accessories</span></a>
-  <div class="nav-links">
-    <a href="index.php">Home</a>
-    <a href="catalog.php">Shop</a>
-    <a href="customize.php">Customize</a>
-    <a href="terms.php" class="active">Terms</a>
-    <?php if ($is_logged_in): ?>
-    <a href="cart.php" class="nav-cart-link" title="Cart" aria-label="Cart"><i class='bx bx-cart'></i><span class="cart-count" data-cart-count style="<?php echo $cart_count > 0 ? '' : 'display:none;'; ?>"><?php echo (int)$cart_count; ?></span></a>
-    <?php endif; ?>
-    <?php if ($is_logged_in): ?>
-    <?php include __DIR__ . '/partials/account_menu.php'; ?>
-    <?php else: ?>
-    <a href="../login.php">Login</a>
-    <?php endif; ?>
-  </div>
-</nav>
+<?php include __DIR__ . '/partials/user_main_nav.php'; ?>
 <main class="page-shell">
   <section class="hero">
     <span class="eyebrow"><i class='bx bx-file'></i> Terms & Conditions</span>
     <h1>Guidelines for Using the RBJ Accessories Website and Services.</h1>
     <p>These Terms and Conditions govern the use of the RBJ Accessories website, including browsing, account registration, ordering, customization features, support tools, and related customer services available through the platform.</p>
-    <div class="meta">Last updated: March 20, 2026</div>
+    <div class="meta">Last updated: March 27, 2026</div>
   </section>
   <section class="term-stack">
     <article class="term-card"><h2>Website Use</h2><p>By using the website, you agree to access and use it responsibly. You are expected to provide accurate information where required, maintain the security of your account credentials, and avoid actions that may disrupt or misuse the platform.</p></article>

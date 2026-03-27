@@ -501,7 +501,7 @@ if ($templateChoicesStmt) {
     $templateChoicesRes = $templateChoicesStmt->get_result();
     while ($tp = $templateChoicesRes->fetch_assoc()) {
         $tid = (int)$tp['id'];
-        $choices = rbj_find_shapi_choices((string)$tp['name']);
+        $choices = rbj_find_shapi_choices((string)$tp['name'], $conn, $tid);
         if (empty($choices)) {
             continue;
         }
